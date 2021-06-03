@@ -1,0 +1,27 @@
+name: WeeklyTrendUpload
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+      - name: Install scraper
+        run: |
+          npm install -g tiktok-scraper
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+      - name: Run Weekly Processing script
+        run: |
+          python ./scripts/weekly_processing.py --week data/$(date +week%U)
