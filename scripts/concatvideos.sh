@@ -17,7 +17,7 @@ function convertToTs() {
 export -f convertToTs
 
 echo Create Temp files
-ls $INPUT_DIR/*.mp4 | parallel convertToTs {}
+ls $INPUT_DIR/*.mp4 | xargs -I {} convertToTs {}
 
 
 # Concat to final output

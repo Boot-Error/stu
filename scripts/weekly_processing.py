@@ -108,13 +108,13 @@ def TiktokFromDict(tiktok_dict):
     return Tiktok(**modified)
 
 
-def get15MinuteVideoContent(tiktoks):
+def getNMinuteVideoContent(tiktoks, minutes):
     tiktoks = sorted(tiktoks, key=lambda tk: tk.playCount, reverse=True)
     queued = []
     totalPlaytime = 0
     for tk in tiktoks:
         totalTime = totalPlaytime + int(tk.videoMeta.duration)
-        if totalTime > (15 * 60):
+        if totalTime > (minutes * 60):
             break
         queued.append(tk)
         totalPlaytime = totalTime
@@ -123,7 +123,7 @@ def get15MinuteVideoContent(tiktoks):
 
 
 def tiktokScraper(*args, cwd=None):
-    proc = subprocess.run(("tiktok-scraper",) + args)
+    proc = subprocess.run(("tiktok-scraper",) + args, cwd=cwd)
     return proc
 
 
@@ -188,7 +188,7 @@ def main(args):
         logging.error("Directory {} doesn't exist".format(data_dir))
 
     tiktoks = loadTiktokData(data_dir)
-    videoContentTiktoks = get15MinuteVideoContent(tiktoks)
+    videoContentTiktoks = getNMinuteVideoContent(tiktoks, args.total_time)
     downloadVideos(tiktoks)
 
 
@@ -198,6 +198,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument('--week', type=str, required=True, help="week dir")
+    parser.add_argument('--total_time', type=int, default=10, help="total playtime")
     parser.add_argument('--debug', default=False,
                         action="store_true", help="week dir")
     args = parser.parse_args()

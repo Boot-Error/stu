@@ -22,6 +22,22 @@ jobs:
         with:
           python-version: '3.9'
           architecture: 'x64'
-      - name: Run Weekly Processing script
+      - name: Download Videos
         run: |
+          mkdir -pv ./videos
           python ./scripts/weekly_processing.py --week data/$(date +week%U)
+      - name: Setup FFMpeg
+        uses: FedericoCarboni/setup-ffmpeg@v1
+        id: setup-ffmpeg
+      - name: Convert Videos to Landscape
+        run: |
+          mkdir -pv ./adjusted_videos
+          bash ./scripts/v2hconvert.sh ./videos ./adjusted_videos
+      - name: Concat Videos
+        run: |
+          bash ./scripts/concatvideos.sh ./adjusted_videos
+      - name: Save Videos
+        uses: actions/upload-artifact@v2
+        with:
+          name: final-video
+          path: ./adjusted_videos/output.mp4
