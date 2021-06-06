@@ -32,7 +32,7 @@ jobs:
       - name: Convert Videos to Landscape
         run: |
           mkdir -pv ./adjusted_videos
-          bash ./scripts/v2hconvert.sh ./videos ./adjusted_videos
+          find . -type f -name "./videos/*.mp4" -exec bash v2hconvert.sh {} ./adjusted_videos \;
       - name: Concat Videos
         run: |
           bash ./scripts/concatvideos.sh ./adjusted_videos
